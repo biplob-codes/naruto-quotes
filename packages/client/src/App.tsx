@@ -1,19 +1,42 @@
-import { useEffect, useState } from 'react';
-import { Button } from './components/ui/button';
+import { useState, useEffect } from 'react';
+import { QuoteCard } from './components/QuoteCard';
 
-function App() {
-   const [message, setMessage] = useState('');
+interface Quote {
+   id: number;
+   title: string;
+   author: {
+      name: string;
+      image: string;
+   };
+}
+
+export default function App() {
+   const [quote, setQuote] = useState<Quote | null>(null);
+   const [loading, setLoading] = useState(true);
+
+   const fetchQuote = async () => {
+      setLoading(true);
+      const res = await fetch('/api/quote');
+      const data = await res.json();
+      setQuote(data);
+      setLoading(false);
+   };
+
    useEffect(() => {
-      fetch('/api/hello')
-         .then((res) => res.json())
-         .then((data) => setMessage(data.message));
+      fetchQuote();
    }, []);
+
    return (
-      <div className="p-10">
-         <p className="font-bold text-2xl mb-5">{message}</p>
-         <Button> Click me</Button>
+      <div className="grid-bg min-h-screen flex items-center justify-center p-6">
+         {!quote && loading ? (
+            <p className="text-sm text-neutral-500">Loading...</p>
+         ) : (
+            <QuoteCard
+               quote={quote!}
+               onRefresh={fetchQuote}
+               isLoading={loading}
+            />
+         )}
       </div>
    );
 }
-
-export default App;
