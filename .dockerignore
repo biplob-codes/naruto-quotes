@@ -1,0 +1,4 @@
+packages/server/.env
+packages/server/node_modules
+packages/client/node_modules
+packages/server/generated/prisma
