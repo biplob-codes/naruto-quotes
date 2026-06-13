@@ -1,0 +1,20 @@
+name: 'Deploy server'
+on:
+   push:
+      branches:
+         - main
+
+jobs:
+   deploy:
+      runs-on: ubuntu-latest
+      steps:
+         - name: Checkout code
+           uses: actions/checkout@v6
+         - name: Login to docker hub
+           run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ vars.DOCKER_USERNAME }} --password-stdin
+
+         - name: Build docker image
+           run: docker build -f docker/Dockerfile.server -t ${{ vars.DOCKER_USERNAME }}/narutoquotes-server:${{ github.sha }} .
+
+         - name: Push image to docker hub
+           run: docker push ${{ vars.DOCKER_USERNAME }}/narutoquotes-server:${{ github.sha }}
