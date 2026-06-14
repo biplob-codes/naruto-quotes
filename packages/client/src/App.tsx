@@ -16,7 +16,7 @@ export default function App() {
 
    const fetchQuote = async () => {
       setLoading(true);
-      const res = await fetch('/api/quote');
+      const res = await fetch('/quote');
       const data = await res.json();
       setQuote(data);
       setLoading(false);

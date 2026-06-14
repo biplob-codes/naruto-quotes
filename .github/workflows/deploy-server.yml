@@ -10,6 +10,7 @@ jobs:
       steps:
          - name: Checkout code
            uses: actions/checkout@v6
+
          - name: Login to docker hub
            run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ vars.DOCKER_USERNAME }} --password-stdin
 
@@ -18,3 +19,17 @@ jobs:
 
          - name: Push image to docker hub
            run: docker push ${{ vars.DOCKER_USERNAME }}/narutoquotes-server:${{ github.sha }}
+
+         - name: SSH into the host machine and deploy
+           run: |
+              mkdir -p ~/.ssh
+              echo "${{ vars.HOST_KEY }}" > ~/.ssh/known_hosts
+              echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_ed25519
+              chmod 600 ~/.ssh/id_ed25519
+              ssh -i ~/.ssh/id_ed25519 ubuntu@${{ vars.HOST_IP }} "
+              docker pull ${{ vars.DOCKER_USERNAME }}/narutoquotes-server:${{ github.sha }}
+              docker stop app
+              docker rm app
+              docker run --name app -d -e DATABASE_URL=${{ secrets.DATABASE_URL }} -p 3000:3000 ${{ vars.DOCKER_USERNAME }}/narutoquotes-server:${{ github.sha }}
+              docker image prune -a -f
+              "

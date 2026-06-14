@@ -5,7 +5,7 @@ const app = express();
 app.get('/', (req: Request, res: Response) => {
    res.send('Hello World!');
 });
-app.get('/api/quote', async (req: Request, res: Response) => {
+app.get('/quote', async (req: Request, res: Response) => {
    const count = await prisma.quote.count();
    const random = Math.floor(Math.random() * count);
 
@@ -17,7 +17,7 @@ app.get('/api/quote', async (req: Request, res: Response) => {
    res.json(quote);
 });
 
-const port = process.env.PORT || '3000';
+const port = '3000';
 app.listen(port, () => {
    console.log(`Server is running on  http://localhost:${port}`);
 });
