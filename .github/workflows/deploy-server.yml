@@ -26,10 +26,4 @@ jobs:
               echo "${{ vars.HOST_KEY }}" > ~/.ssh/known_hosts
               echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_ed25519
               chmod 600 ~/.ssh/id_ed25519
-              ssh -i ~/.ssh/id_ed25519 ubuntu@${{ vars.HOST_IP }} "
-              docker pull ${{ vars.DOCKER_USERNAME }}/narutoquotes-server:${{ github.sha }}
-              docker stop app
-              docker rm app
-              docker run --name app -d -e DATABASE_URL=${{ secrets.DATABASE_URL }} -p 3000:3000 ${{ vars.DOCKER_USERNAME }}/narutoquotes-server:${{ github.sha }}
-              docker image prune -a -f
-              "
+              ssh -i ~/.ssh/id_ed25519 ubuntu@${{ vars.HOST_IP }} "docker pull ${{ vars.DOCKER_USERNAME }}/narutoquotes-server:${{ github.sha }} && docker stop app && docker rm app && docker run --name app -d -e DATABASE_URL=${{ secrets.DATABASE_URL }} -p 3000:3000 ${{ vars.DOCKER_USERNAME }}/narutoquotes-server:${{ github.sha }} && docker image prune -a -f"
